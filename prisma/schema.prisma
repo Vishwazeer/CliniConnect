@@ -3,8 +3,39 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+enum AppointmentStatus {
+  HELD
+  BOOKED
+  COMPLETED
+  CANCELLED
+}
+
+enum UrgencyLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum JobType {
+  EMAIL
+  CALENDAR_SYNC
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
 }
 
 model User {
@@ -13,7 +44,7 @@ model User {
   password      String?
   name          String
   phone         String?
-  role          String    @default("PATIENT")
+  role          Role      @default(PATIENT)
   image         String?
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
@@ -35,12 +66,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String? @db.Text
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -57,6 +88,7 @@ model Session {
 }
 
 model VerificationToken {
+  id         String   @id @default(cuid())
   identifier String
   token      String   @unique
   expires    DateTime
@@ -69,12 +101,12 @@ model DoctorProfile {
   userId              String   @unique
   specialisation      String
   qualifications      String
-  bio                 String?
+  bio                 String?  @db.Text
   avatarUrl           String?
   workingHoursStart   String   @default("09:00")
   workingHoursEnd     String   @default("17:00")
   slotDurationMinutes Int      @default(30)
-  leaveDays           String   @default("[]") // JSON string for SQLite compatibility
+  leaveDays           Json     @default("[]") // Store leave dates as array ["2026-08-25"]
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
@@ -85,19 +117,19 @@ model Appointment {
   id              String            @id @default(cuid())
   patientId       String
   doctorId        String
-  date            DateTime
+  date            DateTime          @db.Date
   startTime       String
   endTime         String
-  status          String            @default("HELD")
+  status          AppointmentStatus @default(HELD)
   holdExpiresAt   DateTime?
-  symptoms        String?
-  preVisitSummary String?
-  urgencyLevel    String?
-  suggestedQuestions String?         // Store JSON string
-  doctorNotes     String?
-  prescription    String?
-  postVisitSummary  String?
-  cancellationReason String?
+  symptoms        String?           @db.Text
+  preVisitSummary String?           @db.Text
+  urgencyLevel    UrgencyLevel?
+  suggestedQuestions Json?           // Store suggested questions array
+  doctorNotes     String?           @db.Text
+  prescription    String?           @db.Text
+  postVisitSummary  String?         @db.Text
+  cancellationReason String?        @db.Text
   calendarEventIdPatient String?
   calendarEventIdDoctor  String?
   createdAt       DateTime          @default(now())
@@ -108,7 +140,7 @@ model Appointment {
 
   medicationReminders MedicationReminder[]
 
-  @@unique([doctorId, date, startTime, status], name: "unique_booking")
+  @@unique([doctorId, date, startTime, status])
   @@index([patientId, status])
   @@index([doctorId, date])
   @@index([status, holdExpiresAt])
@@ -121,8 +153,8 @@ model MedicationReminder {
   dosage          String
   frequency       String
   instructions    String?
-  startDate       DateTime
-  endDate         DateTime?
+  startDate       DateTime  @db.Date
+  endDate         DateTime? @db.Date
   nextReminderAt  DateTime?
   isActive        Boolean   @default(true)
   createdAt       DateTime  @default(now())
@@ -146,14 +178,14 @@ model PreferredReminderTime {
 
 model JobQueue {
   id           String    @id @default(cuid())
-  type         String
-  payload      String    // JSON string for SQLite
-  status       String    @default("PENDING")
+  type         JobType
+  payload      Json
+  status       JobStatus @default(PENDING)
   attempts     Int       @default(0)
   maxAttempts  Int       @default(3)
   scheduledAt  DateTime  @default(now())
   processedAt  DateTime?
-  failedReason String?
+  failedReason String?   @db.Text
   createdAt    DateTime  @default(now())
 
   @@index([status, scheduledAt])

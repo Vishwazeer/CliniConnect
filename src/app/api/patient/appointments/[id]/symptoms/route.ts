@@ -22,15 +22,15 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const fullSymptoms = `Symptoms: ${symptoms}\nDuration: ${duration}\nSeverity: ${severity}\nCurrent Meds: ${currentMeds}`;
 
   let preVisitSummary = "Symptoms recorded. AI summary generation failed.";
-  let urgencyLevel = severity === 'severe' ? 'HIGH' : severity === 'moderate' ? 'MEDIUM' : 'LOW';
-  let suggestedQuestions = "[]";
+  let urgencyLevel: any = severity === 'severe' ? 'HIGH' : severity === 'moderate' ? 'MEDIUM' : 'LOW';
+  let suggestedQuestions: any = [];
 
   try {
     const summaryResult = await generatePreVisitSummary(fullSymptoms);
     if (summaryResult) {
       preVisitSummary = summaryResult.summary;
       urgencyLevel = summaryResult.urgencyLevel.toUpperCase(); // LOW | MEDIUM | HIGH
-      suggestedQuestions = JSON.stringify(summaryResult.suggestedQuestions);
+      suggestedQuestions = summaryResult.suggestedQuestions;
     }
   } catch (llmError) {
     console.error("LLM Pre-Visit Summary failed:", llmError);

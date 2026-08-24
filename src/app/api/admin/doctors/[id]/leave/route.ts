@@ -10,20 +10,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const doctorProfile = await prisma.doctorProfile.findUnique({ where: { userId: id } });
     if (!doctorProfile) return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
 
-    let existingLeaves: string[] = [];
-    try {
-      existingLeaves = typeof doctorProfile.leaveDays === 'string' 
-        ? JSON.parse(doctorProfile.leaveDays) 
-        : (doctorProfile.leaveDays as string[]) || [];
-    } catch (e) {
-      console.error("Failed to parse existing leaves", e);
-    }
-
+    const existingLeaves = (doctorProfile.leaveDays as string[]) || [];
     const newLeaves = Array.from(new Set([...existingLeaves, ...dates]));
 
     await prisma.doctorProfile.update({
       where: { userId: id },
-      data: { leaveDays: JSON.stringify(newLeaves) }
+      data: { leaveDays: newLeaves }
     });
 
     let affectedCount = 0;
@@ -47,11 +39,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         await prisma.jobQueue.create({
           data: {
             type: 'EMAIL',
-            payload: JSON.stringify({
+            payload: {
               type: 'APPOINTMENT_CANCELLED',
               appointmentId: apt.id,
               reason: 'Doctor on leave'
-            })
+            } as any
           }
         });
         affectedCount++;
@@ -71,20 +63,12 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     const doctorProfile = await prisma.doctorProfile.findUnique({ where: { userId: id } });
     if (!doctorProfile) return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
 
-    let existingLeaves: string[] = [];
-    try {
-      existingLeaves = typeof doctorProfile.leaveDays === 'string' 
-        ? JSON.parse(doctorProfile.leaveDays) 
-        : (doctorProfile.leaveDays as string[]) || [];
-    } catch (e) {
-      console.error("Failed to parse existing leaves", e);
-    }
-
+    const existingLeaves = (doctorProfile.leaveDays as string[]) || [];
     const newLeaves = existingLeaves.filter(d => d !== date);
 
     await prisma.doctorProfile.update({
       where: { userId: id },
-      data: { leaveDays: JSON.stringify(newLeaves) }
+      data: { leaveDays: newLeaves }
     });
 
     return NextResponse.json({ success: true, removedDate: date });

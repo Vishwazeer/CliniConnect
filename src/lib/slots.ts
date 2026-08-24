@@ -19,12 +19,7 @@ export async function generateAvailableSlots(
   if (!profile) return [];
 
   // Check if date is a leave day
-  let leaveDays: string[] = [];
-  try {
-    leaveDays = typeof profile.leaveDays === 'string' ? JSON.parse(profile.leaveDays) : (profile.leaveDays as string[]) || [];
-  } catch (e) {
-    console.error("Failed to parse leave days", e);
-  }
+  const leaveDays = (profile.leaveDays as string[]) || [];
   if (leaveDays.includes(dateStr)) return [];
 
   const { workingHoursStart, workingHoursEnd, slotDurationMinutes } = profile;

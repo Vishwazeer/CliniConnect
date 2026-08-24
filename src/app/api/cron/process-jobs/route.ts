@@ -41,7 +41,7 @@ export async function GET(request: Request) {
         data: { status: "PROCESSING", attempts: { increment: 1 } },
       });
 
-      const payload = JSON.parse(job.payload) as { to: string; subject: string; html: string };
+      const payload = job.payload as any as { to: string; subject: string; html: string };
       const success = await sendEmail(payload);
 
       if (success) {
