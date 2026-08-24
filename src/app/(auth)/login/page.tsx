@@ -7,8 +7,8 @@ import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("john.doe@example.com");
+  const [password, setPassword] = useState("password123");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,6 +40,43 @@ export default function LoginPage() {
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-teal-800">Welcome Back</h2>
         <p className="text-slate-500 mt-2">Sign in to your account</p>
+      </div>
+
+      {/* Demo Credentials Quick Fill */}
+      <div className="mb-6 p-3 bg-teal-50 rounded-lg border border-teal-100">
+        <p className="text-xs font-semibold text-teal-800 mb-2">Demo Quick Login:</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setEmail("admin@healthcare.com");
+              setPassword("password123");
+            }}
+            className="text-xs bg-white hover:bg-slate-50 text-slate-700 py-1 px-2.5 rounded border border-slate-200 transition-colors font-medium"
+          >
+            Admin
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setEmail("sarah.patel@healthcare.com");
+              setPassword("password123");
+            }}
+            className="text-xs bg-white hover:bg-slate-50 text-slate-700 py-1 px-2.5 rounded border border-slate-200 transition-colors font-medium"
+          >
+            Doctor (Sarah)
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setEmail("john.doe@example.com");
+              setPassword("password123");
+            }}
+            className="text-xs bg-white hover:bg-slate-50 text-slate-700 py-1 px-2.5 rounded border border-slate-200 transition-colors font-medium"
+          >
+            Patient (John)
+          </button>
+        </div>
       </div>
 
       {error && (
