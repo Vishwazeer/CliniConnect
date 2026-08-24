@@ -1,0 +1,161 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String?
+  name          String
+  phone         String?
+  role          String    @default("PATIENT")
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  doctorProfile DoctorProfile?
+
+  patientAppointments Appointment[] @relation("PatientAppointments")
+  doctorAppointments  Appointment[] @relation("DoctorAppointments")
+
+  preferredReminderTimes PreferredReminderTime[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model DoctorProfile {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  specialisation      String
+  qualifications      String
+  bio                 String?
+  avatarUrl           String?
+  workingHoursStart   String   @default("09:00")
+  workingHoursEnd     String   @default("17:00")
+  slotDurationMinutes Int      @default(30)
+  leaveDays           String   @default("[]") // JSON string for SQLite compatibility
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Appointment {
+  id              String            @id @default(cuid())
+  patientId       String
+  doctorId        String
+  date            DateTime
+  startTime       String
+  endTime         String
+  status          String            @default("HELD")
+  holdExpiresAt   DateTime?
+  symptoms        String?
+  preVisitSummary String?
+  urgencyLevel    String?
+  suggestedQuestions String?         // Store JSON string
+  doctorNotes     String?
+  prescription    String?
+  postVisitSummary  String?
+  cancellationReason String?
+  calendarEventIdPatient String?
+  calendarEventIdDoctor  String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  patient User @relation("PatientAppointments", fields: [patientId], references: [id])
+  doctor  User @relation("DoctorAppointments", fields: [doctorId], references: [id])
+
+  medicationReminders MedicationReminder[]
+
+  @@unique([doctorId, date, startTime, status], name: "unique_booking")
+  @@index([patientId, status])
+  @@index([doctorId, date])
+  @@index([status, holdExpiresAt])
+}
+
+model MedicationReminder {
+  id              String    @id @default(cuid())
+  appointmentId   String
+  medicationName  String
+  dosage          String
+  frequency       String
+  instructions    String?
+  startDate       DateTime
+  endDate         DateTime?
+  nextReminderAt  DateTime?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  @@index([isActive, nextReminderAt])
+}
+
+model PreferredReminderTime {
+  id     String @id @default(cuid())
+  userId String
+  time   String // e.g. "08:00", "20:00"
+  label  String? // e.g. "Morning", "Evening"
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, time])
+}
+
+model JobQueue {
+  id           String    @id @default(cuid())
+  type         String
+  payload      String    // JSON string for SQLite
+  status       String    @default("PENDING")
+  attempts     Int       @default(0)
+  maxAttempts  Int       @default(3)
+  scheduledAt  DateTime  @default(now())
+  processedAt  DateTime?
+  failedReason String?
+  createdAt    DateTime  @default(now())
+
+  @@index([status, scheduledAt])
+  @@index([type, status])
+}

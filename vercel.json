@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/process-jobs",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/appointment-reminders",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/medication-reminders",
+      "schedule": "0 * * * *"
+    }
+  ]
+}
