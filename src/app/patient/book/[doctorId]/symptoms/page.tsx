@@ -5,6 +5,7 @@ import { use } from 'react';
 
 export default function SymptomsPage({ params }: { params: Promise<{ doctorId: string }> }) {
   const router = useRouter();
+  const { doctorId } = use(params);
   const searchParams = useSearchParams();
   const appointmentId = searchParams.get('appointmentId');
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes hold
@@ -22,14 +23,14 @@ export default function SymptomsPage({ params }: { params: Promise<{ doctorId: s
         if (prev <= 1) {
           clearInterval(timer);
           alert('Hold expired. Please try booking again.');
-          router.push(`/patient/book/${use(params).doctorId}`);
+          router.push(`/patient/book/${doctorId}`);
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [appointmentId, router, params]);
+  }, [appointmentId, router, doctorId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +48,7 @@ export default function SymptomsPage({ params }: { params: Promise<{ doctorId: s
     } else {
       if (res.status === 410) {
         alert('Hold expired.');
-        router.push(`/patient/book/${use(params).doctorId}`);
+        router.push(`/patient/book/${doctorId}`);
       } else {
         alert('Failed to save symptoms.');
         setSubmitting(false);
@@ -68,7 +69,7 @@ export default function SymptomsPage({ params }: { params: Promise<{ doctorId: s
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow">
-        <h1 className="text-xl font-bold text-gray-900 mb-6">Patient Symptoms & Details</h1>
+        <h1 className="text-xl font-bold text-gray-900 mb-6">Patient Symptoms &amp; Details</h1>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>

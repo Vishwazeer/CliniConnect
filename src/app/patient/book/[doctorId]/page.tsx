@@ -19,9 +19,12 @@ export default function BookAppointmentPage({ params }: { params: Promise<{ doct
   });
 
   useEffect(() => {
-    fetch(`/api/patient/doctors/${doctorId}`)
+    fetch('/api/patient/doctors')
       .then(res => res.json())
-      .then(data => setDoctor(data.doctor))
+      .then(data => {
+        const found = (data.doctors || []).find((d: any) => d.id === doctorId);
+        if (found) setDoctor(found);
+      })
       .catch(() => {});
   }, [doctorId]);
 
@@ -56,7 +59,7 @@ export default function BookAppointmentPage({ params }: { params: Promise<{ doct
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Book Appointment</h1>
         {doctor && (
           <div className="text-gray-600">
-            Booking with <span className="font-semibold">Dr. {doctor.user.name}</span>
+            Booking with <span className="font-semibold">Dr. {doctor.name}</span>
           </div>
         )}
       </div>

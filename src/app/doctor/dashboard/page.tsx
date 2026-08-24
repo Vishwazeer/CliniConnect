@@ -41,12 +41,12 @@ export default function DoctorDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800">Today's Overview</h1>
+      <h1 className="text-2xl font-bold text-gray-800">Today&apos;s Overview</h1>
       
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="text-sm text-gray-500 uppercase tracking-wide">Today's Patients</div>
+          <div className="text-sm text-gray-500 uppercase tracking-wide">Today&apos;s Patients</div>
           <div className="text-3xl font-bold text-teal-600 mt-2">{todayPatients}</div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
@@ -62,7 +62,7 @@ export default function DoctorDashboard() {
       {/* Appointments Timeline */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">Today's Appointments</h2>
+          <h2 className="text-lg font-semibold text-gray-800">Today&apos;s Appointments</h2>
         </div>
         <div className="p-6">
           {appointments.length === 0 ? (
@@ -74,16 +74,24 @@ export default function DoctorDashboard() {
                   <div className="block border border-gray-200 rounded-lg p-4 hover:border-teal-500 hover:shadow-md transition-all cursor-pointer bg-gray-50 hover:bg-white mb-4">
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="font-semibold text-lg text-gray-800">{new Date(apt.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                        <div className="font-semibold text-lg text-gray-800">
+                          {apt.startTime} - {apt.endTime}
+                        </div>
                         <div className="text-gray-600">{apt.patient?.name || 'Unknown Patient'}</div>
+                        <div className="text-xs text-gray-400 mt-1">
+                          {new Date(apt.date).toLocaleDateString()}
+                        </div>
                       </div>
-                      <div className={`px-3 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(apt.preVisitSummary?.urgency)}`}>
-                        {apt.preVisitSummary?.urgency || 'Normal'}
+                      <div className={`px-3 py-1 rounded-full text-xs font-medium border ${getUrgencyColor(apt.urgencyLevel)}`}>
+                        {apt.urgencyLevel || 'Normal'}
                       </div>
                     </div>
-                    {apt.preVisitSummary?.chiefComplaint && (
+                    {apt.preVisitSummary && (
                       <div className="mt-3 text-sm text-gray-600 border-t pt-2">
-                        <span className="font-medium text-gray-700">Chief Complaint:</span> {apt.preVisitSummary.chiefComplaint}
+                        <span className="font-medium text-gray-700">Summary:</span>{' '}
+                        {apt.preVisitSummary.length > 100
+                          ? apt.preVisitSummary.substring(0, 100) + '...'
+                          : apt.preVisitSummary}
                       </div>
                     )}
                   </div>

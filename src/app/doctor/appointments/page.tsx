@@ -90,7 +90,7 @@ export default function DoctorAppointments() {
                   appointments.map((apt) => (
                     <tr key={apt.id} className="border-b border-gray-100 hover:bg-gray-50">
                       <td className="px-6 py-4 text-sm text-gray-800">
-                        {new Date(apt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {apt.startTime} - {apt.endTime}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-800">{apt.patient?.name || 'Unknown'}</td>
                       <td className="px-6 py-4">
@@ -99,7 +99,7 @@ export default function DoctorAppointments() {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-sm text-gray-600">{apt.preVisitSummary?.urgency || '-'}</span>
+                        <span className="text-sm text-gray-600">{apt.urgencyLevel || '-'}</span>
                       </td>
                       <td className="px-6 py-4">
                         <Link 

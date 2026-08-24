@@ -18,7 +18,7 @@ export default function DoctorLayout({ children }: { children: React.ReactNode }
     <div className="min-h-screen flex bg-gray-50">
       {/* Sidebar */}
       <div className="w-64 bg-teal-800 text-white flex flex-col">
-        <div className="p-4 text-2xl font-bold border-b border-teal-700">Doctor Portal</div>
+        <div className="p-4 text-2xl font-bold border-b border-teal-700">CliniConnect</div>
         <nav className="flex-1 p-4 space-y-2">
           {navItems.map((item) => (
             <Link
@@ -42,7 +42,7 @@ export default function DoctorLayout({ children }: { children: React.ReactNode }
             Welcome, Dr. {session?.user?.name || 'Doctor'}
           </h2>
           <button
-            onClick={() => signOut()}
+            onClick={() => signOut({ callbackUrl: '/' })}
             className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded transition-colors"
           >
             Sign Out

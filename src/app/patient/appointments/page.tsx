@@ -53,7 +53,7 @@ export default function AppointmentsPage() {
               <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="font-bold text-lg text-gray-900">Dr. {apt.doctor?.user?.name || 'Unknown'}</span>
+                    <span className="font-bold text-lg text-gray-900">Dr. {apt.doctor?.name || 'Unknown'}</span>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
                       apt.status === 'BOOKED' ? 'bg-blue-100 text-blue-800' :
                       apt.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :

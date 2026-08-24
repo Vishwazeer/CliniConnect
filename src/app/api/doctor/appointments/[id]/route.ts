@@ -16,7 +16,7 @@ export async function GET(
     const appointment = await prisma.appointment.findUnique({
       where: { id: resolvedParams.id },
       include: {
-        patient: { select: { id: true, name: true, email: true } }
+        patient: { select: { id: true, name: true, email: true, phone: true, image: true } }
       },
     });
 

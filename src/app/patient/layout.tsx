@@ -18,7 +18,7 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
   return (
     <div className="flex h-screen bg-gray-50">
       <aside className="w-64 bg-teal-800 text-white flex flex-col">
-        <div className="p-4 text-2xl font-bold border-b border-teal-700">HealthPortal</div>
+        <div className="p-4 text-2xl font-bold border-b border-teal-700">CliniConnect</div>
         <nav className="flex-1 p-4 space-y-2">
           {navItems.map(item => (
             <Link

@@ -19,7 +19,7 @@ export default function DoctorsPage() {
   }, [specialisation]);
 
   const filteredDoctors = doctors.filter(doc => 
-    doc.user.name.toLowerCase().includes(search.toLowerCase())
+    doc.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -51,12 +51,12 @@ export default function DoctorsPage() {
           <div key={doctor.id} className="bg-white rounded-lg shadow p-6 flex flex-col">
             <div className="flex items-center space-x-4 mb-4">
               <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center text-teal-800 font-bold text-xl">
-                {doctor.user.name.charAt(0)}
+                {doctor.name.charAt(0)}
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Dr. {doctor.user.name}</h3>
-                <p className="text-teal-600 font-medium">{doctor.profile?.specialisation}</p>
-                <p className="text-sm text-gray-500">{doctor.profile?.qualifications}</p>
+                <h3 className="text-lg font-bold text-gray-900">Dr. {doctor.name}</h3>
+                <p className="text-teal-600 font-medium">{doctor.doctorProfile?.specialisation}</p>
+                <p className="text-sm text-gray-500">{doctor.doctorProfile?.qualifications}</p>
               </div>
             </div>
             
