@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Calendar, Eye } from 'lucide-react';
 
 export default function AppointmentsPage() {
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -34,7 +35,7 @@ export default function AppointmentsPage() {
             key={t}
             onClick={() => setTab(t as any)}
             className={`px-4 py-2 font-medium border-b-2 -mb-px ${
-              tab === t ? 'border-teal-600 text-teal-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              tab === t ? 'border-cyan-600 text-cyan-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
             {t}
@@ -62,11 +63,13 @@ export default function AppointmentsPage() {
                       {apt.status}
                     </span>
                   </div>
-                  <div className="text-gray-600">
+                  <div className="text-gray-600 flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
                     {new Date(apt.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at {apt.startTime}
                   </div>
                 </div>
-                <div className="text-teal-600 font-medium whitespace-nowrap">
+                <div className="text-cyan-600 font-medium whitespace-nowrap flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
                   View Details &rarr;
                 </div>
               </div>

@@ -72,7 +72,7 @@ export default function BookAppointmentPage({ params }: { params: Promise<{ doct
               key={d}
               onClick={() => setDate(d)}
               className={`flex-shrink-0 px-4 py-2 rounded-lg border ${
-                date === d ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-gray-700 hover:bg-gray-50'
+                date === d ? 'bg-cyan-600 text-white border-cyan-600' : 'bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
               <div className="text-sm">{new Date(d).toLocaleDateString('en-US', { weekday: 'short' })}</div>
@@ -98,7 +98,7 @@ export default function BookAppointmentPage({ params }: { params: Promise<{ doct
                   onClick={() => handleSlotClick(slot.startTime)}
                   className={`py-2 px-3 rounded text-sm font-medium ${
                     slot.available 
-                      ? 'bg-teal-50 text-teal-700 hover:bg-teal-600 hover:text-white border border-teal-200' 
+                      ? 'bg-cyan-50 text-cyan-700 hover:bg-cyan-600 hover:text-white border border-cyan-200' 
                       : 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
                   }`}
                 >

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Users, CheckCircle, Clock, CalendarDays } from 'lucide-react';
 
 export default function DoctorDashboard() {
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -46,16 +47,25 @@ export default function DoctorDashboard() {
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="text-sm text-gray-500 uppercase tracking-wide">Today&apos;s Patients</div>
-          <div className="text-3xl font-bold text-teal-600 mt-2">{todayPatients}</div>
+          <div className="flex items-center gap-2 mb-2">
+            <Users size={18} className="text-cyan-600" />
+            <div className="text-sm text-gray-500 uppercase tracking-wide">Today's Patients</div>
+          </div>
+          <div className="text-3xl font-bold text-cyan-600">{todayPatients}</div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="text-sm text-gray-500 uppercase tracking-wide">Completed</div>
-          <div className="text-3xl font-bold text-teal-600 mt-2">{completedToday}</div>
+          <div className="flex items-center gap-2 mb-2">
+            <CheckCircle size={18} className="text-cyan-600" />
+            <div className="text-sm text-gray-500 uppercase tracking-wide">Completed</div>
+          </div>
+          <div className="text-3xl font-bold text-cyan-600">{completedToday}</div>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <div className="text-sm text-gray-500 uppercase tracking-wide">Pending</div>
-          <div className="text-3xl font-bold text-teal-600 mt-2">{pending}</div>
+          <div className="flex items-center gap-2 mb-2">
+            <Clock size={18} className="text-cyan-600" />
+            <div className="text-sm text-gray-500 uppercase tracking-wide">Pending</div>
+          </div>
+          <div className="text-3xl font-bold text-cyan-600">{pending}</div>
         </div>
       </div>
 
@@ -71,13 +81,14 @@ export default function DoctorDashboard() {
             <div className="space-y-4">
               {appointments.map((apt) => (
                 <Link key={apt.id} href={`/doctor/appointments/${apt.id}`}>
-                  <div className="block border border-gray-200 rounded-lg p-4 hover:border-teal-500 hover:shadow-md transition-all cursor-pointer bg-gray-50 hover:bg-white mb-4">
+                  <div className="block border border-gray-200 rounded-lg p-4 hover:border-cyan-500 hover:shadow-lg transition-all cursor-pointer bg-gray-50 hover:bg-white mb-4">
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="font-semibold text-lg text-gray-800">
+                        <div className="font-semibold text-lg text-gray-800 flex items-center gap-2">
+                          <CalendarDays size={16} className="text-cyan-600" />
                           {apt.startTime} - {apt.endTime}
                         </div>
-                        <div className="text-gray-600">{apt.patient?.name || 'Unknown Patient'}</div>
+                        <div className="text-gray-600 mt-1">{apt.patient?.name || 'Unknown Patient'}</div>
                         <div className="text-xs text-gray-400 mt-1">
                           {new Date(apt.date).toLocaleDateString()}
                         </div>

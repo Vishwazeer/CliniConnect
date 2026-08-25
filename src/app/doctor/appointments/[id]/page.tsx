@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
+import { Brain, FileText } from 'lucide-react';
 
 export default function AppointmentDetail({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -93,8 +94,11 @@ export default function AppointmentDetail({ params }: { params: Promise<{ id: st
 
       {/* Pre-Visit Summary */}
       {pvs && (
-        <div className="bg-blue-50 p-6 rounded-lg shadow-sm border border-blue-100">
-          <h2 className="text-lg font-semibold text-blue-900 mb-4 border-b border-blue-200 pb-2">Pre-Visit Summary</h2>
+        <div className="bg-blue-50 p-6 rounded-lg shadow-sm border-l-4 border-blue-500">
+          <h2 className="text-lg font-semibold text-blue-900 mb-4 border-b border-blue-200 pb-2 flex items-center gap-2">
+            <Brain className="w-5 h-5" />
+            Pre-Visit Summary
+          </h2>
           <div className="space-y-4 text-blue-900">
             <div>
               <span className="font-medium mr-2">Urgency:</span>
@@ -113,7 +117,15 @@ export default function AppointmentDetail({ params }: { params: Promise<{ id: st
             {pvs.suggestedQuestions && (
               <div>
                 <span className="font-medium block mb-1">Suggested Questions:</span>
-                <p className="bg-white p-3 rounded border border-blue-200 text-sm whitespace-pre-wrap">{pvs.suggestedQuestions}</p>
+                {Array.isArray(pvs.suggestedQuestions) ? (
+                  <ul className="list-disc pl-5 bg-white p-3 rounded border border-blue-200 text-sm">
+                    {pvs.suggestedQuestions.map((q: string, i: number) => (
+                      <li key={i}>{q}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="bg-white p-3 rounded border border-blue-200 text-sm whitespace-pre-wrap">{pvs.suggestedQuestions}</p>
+                )}
               </div>
             )}
           </div>
@@ -124,7 +136,7 @@ export default function AppointmentDetail({ params }: { params: Promise<{ id: st
       {appointment.status === 'BOOKED' && !showNotesForm && (
         <button
           onClick={() => setShowNotesForm(true)}
-          className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-colors shadow-sm"
+          className="w-full py-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-medium transition-colors shadow-sm"
         >
           Start Consultation
         </button>
@@ -132,8 +144,8 @@ export default function AppointmentDetail({ params }: { params: Promise<{ id: st
 
       {/* Notes Form */}
       {showNotesForm && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-teal-200">
-          <h2 className="text-lg font-semibold text-teal-800 mb-4 border-b border-teal-100 pb-2">Post-Visit Notes</h2>
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-cyan-200">
+          <h2 className="text-lg font-semibold text-cyan-800 mb-4 border-b border-cyan-100 pb-2">Post-Visit Notes</h2>
           <form onSubmit={handleSubmitNotes} className="space-y-4">
             {error && <div className="p-3 bg-red-100 text-red-700 rounded text-sm">{error}</div>}
             <div>
@@ -143,7 +155,7 @@ export default function AppointmentDetail({ params }: { params: Promise<{ id: st
                 rows={5}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 placeholder="Enter clinical notes, diagnosis, observations..."
               />
             </div>
@@ -154,7 +166,7 @@ export default function AppointmentDetail({ params }: { params: Promise<{ id: st
                 rows={4}
                 value={prescription}
                 onChange={(e) => setPrescription(e.target.value)}
-                className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+                className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 placeholder="Medications, dosage, follow-up plan..."
               />
             </div>
@@ -170,7 +182,7 @@ export default function AppointmentDetail({ params }: { params: Promise<{ id: st
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded font-medium transition-colors disabled:opacity-50"
+                className="flex-1 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded font-medium transition-colors disabled:opacity-50"
               >
                 {submitting ? 'Saving & Generating Summary...' : 'Complete Appointment'}
               </button>
@@ -195,9 +207,12 @@ export default function AppointmentDetail({ params }: { params: Promise<{ id: st
           </div>
 
           {appointment.postVisitSummary && (
-            <div>
-              <h3 className="text-sm font-medium text-gray-500 mb-1">Patient Summary (Generated)</h3>
-              <div className="bg-green-50 p-4 border border-green-200 rounded text-green-900 whitespace-pre-wrap">
+            <div className="bg-green-50 p-6 rounded-lg shadow-sm border-l-4 border-green-500 mt-6">
+              <h3 className="text-lg font-semibold text-green-900 mb-4 border-b border-green-200 pb-2 flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                Post-Visit Summary (Generated)
+              </h3>
+              <div className="text-green-900 whitespace-pre-wrap">
                 {appointment.postVisitSummary}
               </div>
             </div>

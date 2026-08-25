@@ -12,7 +12,7 @@ export default function DoctorProfile() {
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div className="space-y-4">
           <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 bg-teal-100 text-teal-800 rounded-full flex items-center justify-center text-2xl font-bold">
+            <div className="w-16 h-16 bg-cyan-100 text-cyan-800 rounded-full flex items-center justify-center text-2xl font-bold">
               {session?.user?.name?.charAt(0) || 'D'}
             </div>
             <div>

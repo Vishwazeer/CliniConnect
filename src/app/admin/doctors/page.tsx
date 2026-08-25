@@ -14,7 +14,7 @@ export default async function AdminDoctors() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Manage Doctors</h1>
-        <Link href="/admin/doctors/new" className="bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 font-medium">
+        <Link href="/admin/doctors/new" className="bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-700 font-medium">
           Add New Doctor
         </Link>
       </div>
@@ -36,7 +36,7 @@ export default async function AdminDoctors() {
                 <td className="px-6 py-4">{doctor.doctorProfile?.specialisation || '-'}</td>
                 <td className="px-6 py-4">{doctor.doctorProfile?.workingHoursStart} - {doctor.doctorProfile?.workingHoursEnd}</td>
                 <td className="px-6 py-4">
-                  <Link href={`/admin/doctors/${doctor.id}`} className="text-teal-600 hover:text-teal-800 font-medium mr-4">Edit / Leave</Link>
+                  <Link href={`/admin/doctors/${doctor.id}`} className="text-cyan-600 hover:text-cyan-800 font-medium mr-4">Edit / Leave</Link>
                 </td>
               </tr>
             ))}

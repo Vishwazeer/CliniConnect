@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { Clock, Plus, Trash2 } from 'lucide-react';
 
 export default function SettingsPage() {
   const [times, setTimes] = useState<{ time: string, label: string }[]>([]);
@@ -44,7 +45,10 @@ export default function SettingsPage() {
       <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
 
       <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Medication Reminder Preferences</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <Clock className="w-5 h-5 text-cyan-600" />
+          Medication Reminder Preferences
+        </h2>
         <p className="text-gray-500 mb-6">Configure the default times you prefer to receive medication reminders.</p>
 
         <div className="space-y-4 mb-8">
@@ -59,8 +63,9 @@ export default function SettingsPage() {
                 </div>
                 <button 
                   onClick={() => removeTime(i)}
-                  className="text-red-500 hover:text-red-700 text-sm font-medium"
+                  className="text-red-500 hover:text-red-700 text-sm font-medium flex items-center gap-1"
                 >
+                  <Trash2 className="w-4 h-4" />
                   Remove
                 </button>
               </div>
@@ -73,22 +78,23 @@ export default function SettingsPage() {
           <div className="flex gap-4">
             <input 
               type="time" 
-              className="px-3 py-2 border rounded focus:ring-teal-500 focus:border-teal-500"
+              className="px-3 py-2 border rounded focus:ring-cyan-500 focus:border-cyan-500"
               value={newTime}
               onChange={e => setNewTime(e.target.value)}
             />
             <input 
               type="text" 
               placeholder="Label (e.g. Morning)" 
-              className="flex-1 px-3 py-2 border rounded focus:ring-teal-500 focus:border-teal-500"
+              className="flex-1 px-3 py-2 border rounded focus:ring-cyan-500 focus:border-cyan-500"
               value={newLabel}
               onChange={e => setNewLabel(e.target.value)}
             />
             <button 
               onClick={addTime}
               disabled={!newTime || saving}
-              className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 disabled:opacity-50"
+              className="bg-cyan-600 text-white px-4 py-2 rounded hover:bg-cyan-700 disabled:opacity-50 flex items-center gap-1"
             >
+              <Plus className="w-4 h-4" />
               Add
             </button>
           </div>

@@ -48,12 +48,12 @@ export default function DoctorAppointments() {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-cyan-500"
           />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white"
+            className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-cyan-500 bg-white"
           >
             <option value="">All Statuses</option>
             <option value="BOOKED">Booked</option>
@@ -104,7 +104,7 @@ export default function DoctorAppointments() {
                       <td className="px-6 py-4">
                         <Link 
                           href={`/doctor/appointments/${apt.id}`}
-                          className="text-teal-600 hover:text-teal-800 font-medium text-sm transition-colors"
+                          className="text-cyan-600 hover:text-cyan-800 font-medium text-sm transition-colors"
                         >
                           View Detail
                         </Link>

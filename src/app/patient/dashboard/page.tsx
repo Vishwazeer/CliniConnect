@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { CalendarDays, Pill, Clock } from 'lucide-react';
 
 export default function PatientDashboard() {
   const [appointments, setAppointments] = useState<any[]>([]);
@@ -33,16 +34,25 @@ export default function PatientDashboard() {
       <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow border-t-4 border-teal-600">
-          <h2 className="text-sm font-medium text-gray-500 mb-1">Next Appointment</h2>
+        <div className="bg-white p-6 rounded-lg shadow border-t-4 border-cyan-600">
+          <div className="flex items-center gap-2 mb-1">
+            <CalendarDays size={16} className="text-cyan-600" />
+            <h2 className="text-sm font-medium text-gray-500">Next Appointment</h2>
+          </div>
           <div className="text-2xl font-bold text-gray-900">{appointments[0] ? new Date(appointments[0].date).toLocaleDateString() : 'None'}</div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow border-t-4 border-teal-600">
-          <h2 className="text-sm font-medium text-gray-500 mb-1">Active Medications</h2>
+        <div className="bg-white p-6 rounded-lg shadow border-t-4 border-cyan-600">
+          <div className="flex items-center gap-2 mb-1">
+            <Pill size={16} className="text-cyan-600" />
+            <h2 className="text-sm font-medium text-gray-500">Active Medications</h2>
+          </div>
           <div className="text-2xl font-bold text-gray-900">{reminders.length}</div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow border-t-4 border-teal-600">
-          <h2 className="text-sm font-medium text-gray-500 mb-1">Upcoming Visits</h2>
+        <div className="bg-white p-6 rounded-lg shadow border-t-4 border-cyan-600">
+          <div className="flex items-center gap-2 mb-1">
+            <Clock size={16} className="text-cyan-600" />
+            <h2 className="text-sm font-medium text-gray-500">Upcoming Visits</h2>
+          </div>
           <div className="text-2xl font-bold text-gray-900">{appointments.length}</div>
         </div>
       </div>
@@ -56,10 +66,13 @@ export default function PatientDashboard() {
             <div className="p-6 text-gray-500 text-center">No upcoming appointments.</div>
           ) : (
             appointments.map(apt => (
-              <div key={apt.id} className="p-6 flex items-center justify-between">
+              <div key={apt.id} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
                 <div>
                   <div className="font-medium text-gray-900">Dr. {apt.doctor?.user?.name || 'Unknown'}</div>
-                  <div className="text-sm text-gray-500">{new Date(apt.date).toLocaleDateString()} at {apt.startTime}</div>
+                  <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
+                    <CalendarDays size={14} />
+                    {new Date(apt.date).toLocaleDateString()} at {apt.startTime}
+                  </div>
                 </div>
                 <div className="flex items-center space-x-4">
                   {apt.urgencyLevel && (
@@ -67,7 +80,7 @@ export default function PatientDashboard() {
                       {apt.urgencyLevel}
                     </span>
                   )}
-                  <Link href={`/patient/appointments/${apt.id}`} className="text-teal-600 hover:text-teal-800 text-sm font-medium">
+                  <Link href={`/patient/appointments/${apt.id}`} className="text-cyan-600 hover:text-cyan-800 text-sm font-medium">
                     View
                   </Link>
                 </div>

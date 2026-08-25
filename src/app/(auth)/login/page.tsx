@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { LogIn, User, Stethoscope, ShieldCheck } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -36,15 +37,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-teal-100">
+    <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-cyan-100">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-teal-800">Welcome Back</h2>
+        <h2 className="text-2xl font-bold text-cyan-800">Welcome Back</h2>
         <p className="text-slate-500 mt-2">Sign in to your account</p>
       </div>
 
       {/* Demo Credentials Quick Fill */}
-      <div className="mb-6 p-3 bg-teal-50 rounded-lg border border-teal-100">
-        <p className="text-xs font-semibold text-teal-800 mb-2">Demo Quick Login:</p>
+      <div className="mb-6 p-3 bg-cyan-50 rounded-lg border border-cyan-100">
+        <p className="text-xs font-semibold text-cyan-800 mb-2">Demo Quick Login:</p>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
@@ -52,9 +53,9 @@ export default function LoginPage() {
               setEmail("admin@healthcare.com");
               setPassword("password123");
             }}
-            className="text-xs bg-white hover:bg-slate-50 text-slate-700 py-1 px-2.5 rounded border border-slate-200 transition-colors font-medium"
+            className="text-xs bg-white hover:bg-slate-50 text-slate-700 py-1 px-2.5 rounded border border-slate-200 transition-colors font-medium flex items-center gap-1 cursor-pointer"
           >
-            Admin
+            <ShieldCheck className="w-3.5 h-3.5" /> Admin
           </button>
           <button
             type="button"
@@ -62,9 +63,9 @@ export default function LoginPage() {
               setEmail("sarah.patel@healthcare.com");
               setPassword("password123");
             }}
-            className="text-xs bg-white hover:bg-slate-50 text-slate-700 py-1 px-2.5 rounded border border-slate-200 transition-colors font-medium"
+            className="text-xs bg-white hover:bg-slate-50 text-slate-700 py-1 px-2.5 rounded border border-slate-200 transition-colors font-medium flex items-center gap-1 cursor-pointer"
           >
-            Doctor (Sarah)
+            <Stethoscope className="w-3.5 h-3.5" /> Doctor (Sarah)
           </button>
           <button
             type="button"
@@ -72,9 +73,9 @@ export default function LoginPage() {
               setEmail("john.doe@example.com");
               setPassword("password123");
             }}
-            className="text-xs bg-white hover:bg-slate-50 text-slate-700 py-1 px-2.5 rounded border border-slate-200 transition-colors font-medium"
+            className="text-xs bg-white hover:bg-slate-50 text-slate-700 py-1 px-2.5 rounded border border-slate-200 transition-colors font-medium flex items-center gap-1 cursor-pointer"
           >
-            Patient (John)
+            <User className="w-3.5 h-3.5" /> Patient (John)
           </button>
         </div>
       </div>
@@ -93,7 +94,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className={`w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 ${email ? 'font-bold' : ''}`}
+            className={`w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 ${email ? 'font-bold' : ''}`}
             placeholder="you@example.com"
           />
         </div>
@@ -104,7 +105,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className={`w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 ${password ? 'font-bold' : ''}`}
+            className={`w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 ${password ? 'font-bold' : ''}`}
             placeholder="••••••••"
           />
         </div>
@@ -112,9 +113,9 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-70"
+          className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-70 flex items-center justify-center gap-2 cursor-pointer"
         >
-          {isLoading ? "Signing in..." : "Sign In"}
+          <LogIn className="w-5 h-5" /> {isLoading ? "Signing in..." : "Sign In"}
         </button>
       </form>
 
@@ -126,7 +127,7 @@ export default function LoginPage() {
 
       <button
         onClick={handleGoogleSignIn}
-        className="mt-4 w-full flex items-center justify-center gap-2 bg-white border border-slate-300 text-slate-700 font-medium py-2 px-4 rounded-lg hover:bg-slate-50 transition-colors"
+        className="mt-4 w-full flex items-center justify-center gap-2 bg-white border border-slate-300 text-slate-700 font-medium py-2 px-4 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer"
       >
         <svg className="h-5 w-5" viewBox="0 0 24 24">
           <path
@@ -151,10 +152,11 @@ export default function LoginPage() {
 
       <p className="mt-8 text-center text-sm text-slate-600">
         Don't have an account?{" "}
-        <Link href="/register" className="text-teal-600 hover:text-teal-700 font-medium">
+        <Link href="/register" className="text-cyan-600 hover:text-cyan-700 font-medium cursor-pointer">
           Sign up
         </Link>
       </p>
     </div>
   );
 }
+

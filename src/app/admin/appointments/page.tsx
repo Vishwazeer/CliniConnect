@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { format } from 'date-fns';
+import AppointmentActions from './AppointmentActions';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,6 +28,7 @@ export default async function AdminAppointments({ searchParams }: { searchParams
               <th className="px-6 py-3 font-medium">Doctor</th>
               <th className="px-6 py-3 font-medium">Date & Time</th>
               <th className="px-6 py-3 font-medium">Status</th>
+              <th className="px-6 py-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody className="text-sm text-gray-700">
@@ -46,11 +48,14 @@ export default async function AdminAppointments({ searchParams }: { searchParams
                     {apt.status}
                   </span>
                 </td>
+                <td className="px-6 py-4">
+                  <AppointmentActions id={apt.id} status={apt.status} />
+                </td>
               </tr>
             ))}
             {appointments.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-gray-500">No appointments found.</td>
+                <td colSpan={5} className="px-6 py-8 text-center text-gray-500">No appointments found.</td>
               </tr>
             )}
           </tbody>

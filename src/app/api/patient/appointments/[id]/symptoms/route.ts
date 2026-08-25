@@ -4,52 +4,58 @@ import { auth } from '@/lib/auth';
 import { generatePreVisitSummary } from '@/lib/llm';
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
-  if (!session || session.user?.role !== 'PATIENT') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  const { id } = await params;
-  const { symptoms, duration, severity, currentMeds } = await req.json();
-
-  const apt = await prisma.appointment.findUnique({ where: { id, patientId: session.user.id } });
-  if (!apt) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-  if (apt.status !== 'HELD') return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
-  
-  if (apt.holdExpiresAt && apt.holdExpiresAt < new Date()) {
-    await prisma.appointment.delete({ where: { id } });
-    return NextResponse.json({ error: 'Hold expired' }, { status: 410 });
-  }
-
-  const fullSymptoms = `Symptoms: ${symptoms}\nDuration: ${duration}\nSeverity: ${severity}\nCurrent Meds: ${currentMeds}`;
-
-  let preVisitSummary = "Symptoms recorded. AI summary generation failed.";
-  let urgencyLevel: any = severity === 'severe' ? 'HIGH' : severity === 'moderate' ? 'MEDIUM' : 'LOW';
-  let suggestedQuestions: any = [];
-
   try {
-    const summaryResult = await generatePreVisitSummary(fullSymptoms);
-    if (summaryResult) {
-      preVisitSummary = summaryResult.summary;
-      urgencyLevel = summaryResult.urgencyLevel.toUpperCase(); // LOW | MEDIUM | HIGH
-      suggestedQuestions = summaryResult.suggestedQuestions;
+    const session = await auth();
+    if (!session || session.user?.role !== 'PATIENT') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { id } = await params;
+    const { symptoms, duration, severity, currentMeds } = await req.json();
+
+    const apt = await prisma.appointment.findUnique({ where: { id, patientId: session.user.id } });
+    if (!apt) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    if (apt.status !== 'HELD') return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
+    
+    if (apt.holdExpiresAt && apt.holdExpiresAt < new Date()) {
+      await prisma.appointment.delete({ where: { id } });
+      return NextResponse.json({ error: 'Hold expired' }, { status: 410 });
     }
-  } catch (llmError) {
-    console.error("LLM Pre-Visit Summary failed:", llmError);
+
+    const fullSymptoms = `Symptoms: ${symptoms}\nDuration: ${duration || 'Not specified'}\nSeverity: ${severity || 'mild'}\nCurrent Meds: ${currentMeds || 'None'}`;
+
+    let preVisitSummary = 'Symptoms recorded successfully.';
+    let urgencyLevel = severity === 'severe' ? 'HIGH' : severity === 'moderate' ? 'MEDIUM' : 'LOW';
+    let suggestedQuestions: string[] = [];
+
+    try {
+      const summaryResult = await generatePreVisitSummary(fullSymptoms);
+      if (summaryResult) {
+        preVisitSummary = summaryResult.summary;
+        const level = summaryResult.urgencyLevel.toUpperCase();
+        if (['LOW', 'MEDIUM', 'HIGH'].includes(level)) {
+          urgencyLevel = level;
+        }
+        suggestedQuestions = summaryResult.suggestedQuestions || [];
+      }
+    } catch (llmError) {
+      console.error('LLM Pre-Visit Summary failed:', llmError);
+      // Continue with defaults — appointment still gets booked
+    }
+
+    const updated = await prisma.appointment.update({
+      where: { id },
+      data: {
+        status: 'BOOKED',
+        symptoms: fullSymptoms,
+        preVisitSummary,
+        urgencyLevel: urgencyLevel as any,
+        suggestedQuestions: suggestedQuestions as any,
+        holdExpiresAt: null
+      }
+    });
+
+    return NextResponse.json({ appointment: updated });
+  } catch (error: any) {
+    console.error('Symptoms route error:', error);
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }
-
-  const updated = await prisma.appointment.update({
-    where: { id },
-    data: {
-      status: 'BOOKED',
-      symptoms: fullSymptoms,
-      preVisitSummary,
-      urgencyLevel,
-      suggestedQuestions,
-      holdExpiresAt: null
-    }
-  });
-
-  // Todo: Enqueue confirmation emails
-  // Todo: Calendar integration
-
-  return NextResponse.json({ appointment: updated });
 }

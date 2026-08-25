@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { format } from 'date-fns';
+import { Users, UserCheck, CalendarDays, Activity } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,21 +25,41 @@ export default async function AdminDashboard() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h3 className="text-gray-500 text-sm font-medium">Total Doctors</h3>
-          <p className="text-3xl font-bold text-teal-600 mt-2">{totalDoctors}</p>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-cyan-50 rounded-full text-cyan-600">
+              <Users size={20} />
+            </div>
+            <h3 className="text-gray-500 text-sm font-medium">Total Doctors</h3>
+          </div>
+          <p className="text-3xl font-bold text-cyan-600">{totalDoctors}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h3 className="text-gray-500 text-sm font-medium">Total Patients</h3>
-          <p className="text-3xl font-bold text-teal-600 mt-2">{totalPatients}</p>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-cyan-50 rounded-full text-cyan-600">
+              <UserCheck size={20} />
+            </div>
+            <h3 className="text-gray-500 text-sm font-medium">Total Patients</h3>
+          </div>
+          <p className="text-3xl font-bold text-cyan-600">{totalPatients}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h3 className="text-gray-500 text-sm font-medium">Total Appointments</h3>
-          <p className="text-3xl font-bold text-teal-600 mt-2">{totalAppointments}</p>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-cyan-50 rounded-full text-cyan-600">
+              <Activity size={20} />
+            </div>
+            <h3 className="text-gray-500 text-sm font-medium">Total Appointments</h3>
+          </div>
+          <p className="text-3xl font-bold text-cyan-600">{totalAppointments}</p>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <h3 className="text-gray-500 text-sm font-medium">Today's Appointments</h3>
-          <p className="text-3xl font-bold text-teal-600 mt-2">{todayAppointments}</p>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-cyan-50 rounded-full text-cyan-600">
+              <CalendarDays size={20} />
+            </div>
+            <h3 className="text-gray-500 text-sm font-medium">Today's Appointments</h3>
+          </div>
+          <p className="text-3xl font-bold text-cyan-600">{todayAppointments}</p>
         </div>
       </div>
       

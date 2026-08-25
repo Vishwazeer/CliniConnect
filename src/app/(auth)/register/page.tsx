@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { UserPlus } from 'lucide-react';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -75,9 +76,9 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-teal-100">
+    <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-cyan-100">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-teal-800">Create Account</h2>
+        <h2 className="text-2xl font-bold text-cyan-800">Create Account</h2>
         <p className="text-slate-500 mt-2">Join our healthcare platform</p>
       </div>
 
@@ -96,7 +97,7 @@ export default function RegisterPage() {
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
             placeholder="John Doe"
           />
         </div>
@@ -109,7 +110,7 @@ export default function RegisterPage() {
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
             placeholder="you@example.com"
           />
         </div>
@@ -122,7 +123,7 @@ export default function RegisterPage() {
             value={formData.phone}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
             placeholder="+1 234 567 8900"
           />
         </div>
@@ -135,7 +136,7 @@ export default function RegisterPage() {
             value={formData.password}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
             placeholder="••••••••"
           />
         </div>
@@ -148,7 +149,7 @@ export default function RegisterPage() {
             value={formData.confirmPassword}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
             placeholder="••••••••"
           />
         </div>
@@ -156,15 +157,15 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-70 mt-4"
+          className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-70 mt-4 flex items-center justify-center gap-2 cursor-pointer"
         >
-          {isLoading ? "Creating Account..." : "Create Account"}
+          <UserPlus className="w-5 h-5" /> {isLoading ? "Creating Account..." : "Create Account"}
         </button>
       </form>
 
       <p className="mt-8 text-center text-sm text-slate-600">
         Already have an account?{" "}
-        <Link href="/login" className="text-teal-600 hover:text-teal-700 font-medium">
+        <Link href="/login" className="text-cyan-600 hover:text-cyan-700 font-medium cursor-pointer">
           Sign in
         </Link>
       </p>
