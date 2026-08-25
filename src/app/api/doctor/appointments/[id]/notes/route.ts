@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { enqueueEmail, postVisitSummaryEmail } from '@/lib/email';
-import { getUserAccessToken, updateCalendarEvent } from '@/lib/calendar';
+import { updateCalendarEventForUser } from '@/lib/calendar';
 
 const postVisitNotesSchema = z.object({
   doctorNotes: z.string().min(1),
@@ -69,10 +69,9 @@ export async function POST(
 
     // Sync notes & prescription to patient's Google Calendar event if it exists
     try {
-      const token = await getUserAccessToken(appointment.patientId);
-      if (token && appointment.calendarEventIdPatient) {
+      if (appointment.calendarEventIdPatient) {
         const description = `Chief Complaint: ${appointment.preVisitSummary || ''}\n\nClinical Notes:\n${doctorNotes}\n\nPrescription:\n${prescription}`;
-        await updateCalendarEvent(token, appointment.calendarEventIdPatient, {
+        await updateCalendarEventForUser(appointment.patientId, appointment.calendarEventIdPatient, {
           description
         });
       }

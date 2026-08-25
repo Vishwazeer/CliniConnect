@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
-import { getUserAccessToken, createCalendarEvent } from '@/lib/calendar';
+import { createCalendarEventForUser } from '@/lib/calendar';
 
 function parseDateSafely(input: any, fallback: Date | null = null): Date | null {
   if (!input) return fallback;
@@ -68,19 +68,16 @@ export async function POST(req: Request) {
     });
 
     try {
-      const token = await getUserAccessToken(session.user.id);
-      if (token) {
-        const eventStart: Date = parsedNext || parsedStart || new Date();
-        const startDateTime = eventStart.toISOString();
-        const endDateTime = new Date(eventStart.getTime() + 30 * 60 * 1000).toISOString();
+      const eventStart: Date = parsedNext || parsedStart || new Date();
+      const startDateTime = eventStart.toISOString();
+      const endDateTime = new Date(eventStart.getTime() + 30 * 60 * 1000).toISOString();
 
-        await createCalendarEvent(token, {
-          summary: `Take Medication: ${medicationName} (${dosage})`,
-          description: `Dosage: ${dosage}\nFrequency: ${frequency}\nInstructions: ${instructions || 'None'}`,
-          startDateTime,
-          endDateTime
-        });
-      }
+      await createCalendarEventForUser(session.user.id, {
+        summary: `Take Medication: ${medicationName} (${dosage})`,
+        description: `Dosage: ${dosage}\nFrequency: ${frequency}\nInstructions: ${instructions || 'None'}`,
+        startDateTime,
+        endDateTime
+      });
     } catch (calendarError) {
       console.error("Failed to sync reminder to Google Calendar:", calendarError);
     }

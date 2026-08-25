@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { generatePreVisitSummary } from '@/lib/llm';
-import { getUserAccessToken, createCalendarEvent } from '@/lib/calendar';
+import { createCalendarEventForUser } from '@/lib/calendar';
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -67,8 +67,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     }
 
     try {
-      const token = await getUserAccessToken(session.user.id);
-      if (token && updated) {
+      if (updated) {
         const appointmentDate = new Date(updated.date);
         const dateStr = !isNaN(appointmentDate.getTime()) ? appointmentDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
         const startISO = new Date(`${dateStr}T${updated.startTime}:00`).toISOString();
@@ -80,7 +79,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         });
         const doctorName = doctorUser?.name || 'Doctor';
 
-        const eventId = await createCalendarEvent(token, {
+        const eventId = await createCalendarEventForUser(session.user.id, {
           summary: `Appointment with Dr. ${doctorName}`,
           description: `Chief Complaint: ${updated.preVisitSummary || ''}`,
           startDateTime: startISO,
