@@ -8,7 +8,7 @@ import { LogIn, User, Stethoscope, ShieldCheck, CalendarCheck } from 'lucide-rea
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("sarah.patel@healthcare.com");
+  const [email, setEmail] = useState("john.doe@example.com");
   const [password, setPassword] = useState("password123");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -25,9 +25,7 @@ export default function LoginPage() {
     });
 
     if (res?.error) {
-      setError(res.error.includes("Patients must sign in") 
-        ? "Patients must sign in using the Google button above for Calendar reminders." 
-        : "Invalid credentials. Please try again.");
+      setError("Invalid credentials. Please try again.");
       setIsLoading(false);
     } else {
       router.push("/dashboard");
@@ -37,6 +35,8 @@ export default function LoginPage() {
   const handleGoogleSignIn = () => {
     signIn("google", { callbackUrl: "/dashboard" });
   };
+
+  const isPatientSelected = email === "john.doe@example.com";
 
   return (
     <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg border border-cyan-100 space-y-6">
@@ -56,8 +56,8 @@ export default function LoginPage() {
         <div className="flex items-center gap-2 text-cyan-900">
           <CalendarCheck className="w-5 h-5 text-cyan-600 shrink-0" />
           <div>
-            <h3 className="font-bold text-sm">Patient Portal</h3>
-            <p className="text-[11px] text-slate-500 leading-tight">Google sign-in required for automated Calendar reminders</p>
+            <h3 className="font-bold text-sm">Patient Portal (Google Sign-In)</h3>
+            <p className="text-[11px] text-slate-500 leading-tight">Recommended for live Google Calendar appointment & medication sync</p>
           </div>
         </div>
 
@@ -91,15 +91,15 @@ export default function LoginPage() {
       <div className="relative flex py-1 items-center">
         <div className="flex-grow border-t border-slate-200"></div>
         <span className="flex-shrink mx-3 text-xs uppercase tracking-wider text-slate-400 font-medium">
-          Doctor & Staff Login
+          Or 1-Click Demo Evaluation Login
         </span>
         <div className="flex-grow border-t border-slate-200"></div>
       </div>
 
       {/* Quick Demo Selector for Judges & Staff */}
-      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
-          Demo 1-Click Role Selector (For Judges / Staff):
+      <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+        <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+          Demo 1-Click Role Selector (Judges & Staff):
         </label>
         <select
           onChange={(e) => {
@@ -109,8 +109,8 @@ export default function LoginPage() {
               setPassword("password123");
             }
           }}
-          defaultValue="sarah.patel@healthcare.com"
-          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer shadow-2xs"
+          value={email}
+          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer shadow-2xs"
         >
           <option value="john.doe@example.com">👤 Demo Patient (John Doe)</option>
           <option value="sarah.patel@healthcare.com">👩‍⚕️ Dr. Sarah Patel (General Medicine)</option>
@@ -120,7 +120,7 @@ export default function LoginPage() {
           <option value="meera.nair@healthcare.com">👩‍⚕️ Dr. Meera Nair (Pediatrics)</option>
           <option value="admin@healthcare.com">🛡️ Admin User (Hospital Admin)</option>
         </select>
-        <p className="text-[10px] text-slate-400">Selecting any role autofills credentials below for instant evaluation.</p>
+        <p className="text-[11px] text-slate-500">Pick any role above to automatically populate email &amp; password for immediate access.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3.5">
@@ -131,8 +131,8 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-3.5 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
-            placeholder="doctor@healthcare.com"
+            className="w-full px-3.5 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm font-medium"
+            placeholder="you@example.com"
           />
         </div>
         <div>
@@ -150,9 +150,11 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2 px-4 rounded-lg transition-colors disabled:opacity-70 flex items-center justify-center gap-2 cursor-pointer text-sm"
+          className={`w-full text-white font-semibold py-2.5 px-4 rounded-lg transition-colors disabled:opacity-70 flex items-center justify-center gap-2 cursor-pointer text-sm shadow-xs ${
+            isPatientSelected ? 'bg-cyan-600 hover:bg-cyan-700' : 'bg-slate-800 hover:bg-slate-900'
+          }`}
         >
-          <LogIn className="w-4 h-4" /> {isLoading ? "Signing in..." : "Staff Sign In"}
+          <LogIn className="w-4 h-4" /> {isLoading ? "Signing in..." : isPatientSelected ? "Sign In as Demo Patient" : "Sign In as Staff"}
         </button>
       </form>
     </div>
