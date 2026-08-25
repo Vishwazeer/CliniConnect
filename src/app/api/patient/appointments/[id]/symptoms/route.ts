@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { generatePreVisitSummary } from '@/lib/llm';
+import { getUserAccessToken, createCalendarEvent } from '@/lib/calendar';
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -52,6 +53,35 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         holdExpiresAt: null
       }
     });
+
+    try {
+      const token = await getUserAccessToken(session.user.id);
+      if (token) {
+        const startISO = new Date(updated.date.toISOString().split('T')[0] + 'T' + updated.startTime + ':00').toISOString();
+        const endISO = new Date(updated.date.toISOString().split('T')[0] + 'T' + updated.endTime + ':00').toISOString();
+        
+        const doctorUser = await prisma.user.findUnique({
+          where: { id: updated.doctorId },
+          select: { name: true }
+        });
+        const doctorName = doctorUser?.name || updated.doctorId;
+
+        const eventId = await createCalendarEvent(token, {
+          summary: `Appointment with Dr. ${doctorName}`,
+          description: `Chief Complaint: ${updated.preVisitSummary || ''}`,
+          startDateTime: startISO,
+          endDateTime: endISO
+        });
+        if (eventId) {
+          await prisma.appointment.update({
+            where: { id: updated.id },
+            data: { calendarEventIdPatient: eventId }
+          });
+        }
+      }
+    } catch (calendarError) {
+      console.error('Failed to sync appointment to Google Calendar:', calendarError);
+    }
 
     return NextResponse.json({ appointment: updated });
   } catch (error: any) {

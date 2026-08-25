@@ -46,6 +46,24 @@ export async function POST(req: Request) {
     const holdExpiresAt = new Date();
     holdExpiresAt.setMinutes(holdExpiresAt.getMinutes() + 5);
 
+    const existing = await prisma.appointment.findFirst({
+      where: {
+        doctorId,
+        date: new Date(date),
+        startTime,
+        OR: [
+          { status: 'BOOKED' },
+          {
+            status: 'HELD',
+            holdExpiresAt: { gt: new Date() }
+          }
+        ]
+      }
+    });
+    if (existing) {
+      return NextResponse.json({ error: 'Slot already taken' }, { status: 409 });
+    }
+
     const appointment = await prisma.appointment.create({
       data: {
         patientId: session.user.id,

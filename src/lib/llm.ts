@@ -25,7 +25,7 @@ interface PostVisitResult {
 }
 
 async function callGemini(prompt: string, retries = 1): Promise<string> {
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {

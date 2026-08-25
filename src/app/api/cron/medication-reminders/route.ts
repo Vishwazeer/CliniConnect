@@ -24,13 +24,9 @@ export async function GET(request: Request) {
         ],
       },
       include: {
-        appointment: {
+        patient: {
           include: {
-            patient: {
-              include: {
-                preferredReminderTimes: true,
-              },
-            },
+            preferredReminderTimes: true,
           },
         },
       },
@@ -40,7 +36,7 @@ export async function GET(request: Request) {
     let remindersSent = 0;
 
     for (const reminder of dueReminders) {
-      const patient = reminder.appointment.patient;
+      const patient = reminder.patient;
 
       // Enqueue reminder email
       const email = medicationReminderEmail({
