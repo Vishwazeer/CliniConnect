@@ -33,6 +33,17 @@ Seamless Google OAuth integration links patient identity with Google Calendar pe
 
 ![Google OAuth Sign-In](docs/screenshots/patient/Google%20auth%201.png)
 
+> [!TIP]
+> **First-Time Google Sign-In Instructions (For Evaluators & Judges)**:
+> When signing in with Google for live Google Calendar sync, Google displays a standard permission screen for unverified apps:
+> 1. Click **`Advanced`** in the bottom-left corner.
+> 2. Click **`Go to CliniConnect (unsafe)`** at the bottom.
+> 3. Click **`Continue`** / **`Allow`** to grant Calendar access.
+> 
+> *(Alternatively, use the 1-click **Demo Patient (John Doe)** button on the login screen for instant evaluation without entering personal credentials).*
+
+![Google OAuth Advanced Navigation](docs/screenshots/patient/Google%20OAuth%20Advanced.png)
+
 #### B. Patient Dashboard
 A unified command center showing upcoming consultations, active medication count, recent clinical reports, and quick navigation.
 
