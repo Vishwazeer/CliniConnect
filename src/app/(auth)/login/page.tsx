@@ -96,31 +96,30 @@ export default function LoginPage() {
         <div className="flex-grow border-t border-slate-200"></div>
       </div>
 
-      {/* Staff Quick Fill */}
-      <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
-        <p className="text-[11px] font-semibold text-slate-600 mb-1.5">Staff Demo Autofill:</p>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              setEmail("sarah.patel@healthcare.com");
+      {/* Staff Quick Fill Dropdown */}
+      <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+          Quick Demo Staff Selector:
+        </label>
+        <select
+          onChange={(e) => {
+            const val = e.target.value;
+            if (val) {
+              setEmail(val);
               setPassword("password123");
-            }}
-            className="text-xs bg-white hover:bg-slate-100 text-slate-700 py-1 px-2.5 rounded border border-slate-200 font-medium flex items-center gap-1 cursor-pointer transition-colors"
-          >
-            <Stethoscope className="w-3.5 h-3.5 text-cyan-600" /> Dr. Sarah Patel
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setEmail("admin@healthcare.com");
-              setPassword("password123");
-            }}
-            className="text-xs bg-white hover:bg-slate-100 text-slate-700 py-1 px-2.5 rounded border border-slate-200 font-medium flex items-center gap-1 cursor-pointer transition-colors"
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-cyan-600" /> Admin
-          </button>
-        </div>
+            }
+          }}
+          defaultValue="sarah.patel@healthcare.com"
+          className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer shadow-2xs"
+        >
+          <option value="sarah.patel@healthcare.com">👩‍⚕️ Dr. Sarah Patel (General Medicine)</option>
+          <option value="rajesh.kumar@healthcare.com">👨‍⚕️ Dr. Rajesh Kumar (Cardiology)</option>
+          <option value="priya.sharma@healthcare.com">👩‍⚕️ Dr. Priya Sharma (Dermatology)</option>
+          <option value="amit.desai@healthcare.com">👨‍⚕️ Dr. Amit Desai (Orthopedics)</option>
+          <option value="meera.nair@healthcare.com">👩‍⚕️ Dr. Meera Nair (Pediatrics)</option>
+          <option value="admin@healthcare.com">🛡️ Admin User (Hospital Admin)</option>
+        </select>
+        <p className="text-[10px] text-slate-400">Selecting a doctor automatically fills their credentials below.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3.5">

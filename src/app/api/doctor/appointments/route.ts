@@ -15,10 +15,20 @@ export async function GET(req: Request) {
 
     let whereClause: any = { doctorId: session.user.id };
 
-    if (date) {
-      const targetDate = date === 'today' ? new Date() : new Date(date);
-      targetDate.setHours(0, 0, 0, 0);
-      whereClause.date = targetDate;
+    if (date && date !== 'all') {
+      if (date === 'today') {
+        const targetDate = new Date();
+        targetDate.setHours(0, 0, 0, 0);
+        whereClause.date = targetDate;
+      } else if (date === 'upcoming') {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        whereClause.date = { gte: today };
+      } else {
+        const targetDate = new Date(date);
+        targetDate.setHours(0, 0, 0, 0);
+        whereClause.date = targetDate;
+      }
     }
 
     if (status) {
@@ -30,7 +40,10 @@ export async function GET(req: Request) {
       include: {
         patient: { select: { name: true, email: true } }
       },
-      orderBy: { startTime: 'asc' },
+      orderBy: [
+        { date: 'asc' },
+        { startTime: 'asc' }
+      ],
     });
 
     return NextResponse.json(appointments);
