@@ -3,6 +3,33 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { getUserAccessToken, createCalendarEvent } from '@/lib/calendar';
 
+function parseDateSafely(input: any, fallback: Date | null = null): Date | null {
+  if (!input) return fallback;
+  if (input instanceof Date) return isNaN(input.getTime()) ? fallback : input;
+  const str = String(input).trim();
+  if (!str) return fallback;
+  const d = new Date(str);
+  if (!isNaN(d.getTime())) return d;
+  const parts = str.split(/[-/]/);
+  if (parts.length === 3) {
+    if (parts[2].length === 4) {
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const year = parseInt(parts[2], 10);
+      const cd = new Date(year, month, day);
+      if (!isNaN(cd.getTime())) return cd;
+    }
+    if (parts[0].length === 4) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const cd = new Date(year, month, day);
+      if (!isNaN(cd.getTime())) return cd;
+    }
+  }
+  return fallback;
+}
+
 export async function GET(req: Request) {
   const session = await auth();
   if (!session || session.user?.role !== 'PATIENT') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -22,16 +49,20 @@ export async function POST(req: Request) {
   try {
     const { medicationName, dosage, frequency, instructions, startDate, endDate, nextReminderAt } = await req.json();
 
+    const parsedStart = parseDateSafely(startDate, new Date())!;
+    const parsedEnd = parseDateSafely(endDate, null);
+    const parsedNext = parseDateSafely(nextReminderAt, parsedStart);
+
     const reminder = await prisma.medicationReminder.create({
       data: {
         patientId: session.user.id,
-        medicationName,
-        dosage,
-        frequency,
-        instructions,
-        startDate: new Date(startDate),
-        endDate: endDate ? new Date(endDate) : null,
-        nextReminderAt: nextReminderAt ? new Date(nextReminderAt) : null,
+        medicationName: medicationName || 'Medication',
+        dosage: dosage || 'As directed',
+        frequency: frequency || 'Daily',
+        instructions: instructions || null,
+        startDate: parsedStart,
+        endDate: parsedEnd,
+        nextReminderAt: parsedNext,
         isActive: true
       }
     });

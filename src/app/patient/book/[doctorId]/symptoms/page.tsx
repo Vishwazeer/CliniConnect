@@ -46,11 +46,12 @@ export default function SymptomsPage({ params }: { params: Promise<{ doctorId: s
     if (res.ok) {
       router.push('/patient/dashboard');
     } else {
+      const err = await res.json().catch(() => ({}));
       if (res.status === 410) {
-        alert('Hold expired.');
+        alert(err.error || 'Hold expired.');
         router.push(`/patient/book/${doctorId}`);
       } else {
-        alert('Failed to save symptoms.');
+        alert(err.error || 'Failed to save symptoms.');
         setSubmitting(false);
       }
     }

@@ -42,29 +42,40 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       // Continue with defaults — appointment still gets booked
     }
 
-    const updated = await prisma.appointment.update({
-      where: { id },
-      data: {
-        status: 'BOOKED',
-        symptoms: fullSymptoms,
-        preVisitSummary,
-        urgencyLevel: urgencyLevel as any,
-        suggestedQuestions: suggestedQuestions as any,
-        holdExpiresAt: null
+    let updated;
+    try {
+      updated = await prisma.appointment.update({
+        where: { id },
+        data: {
+          status: 'BOOKED',
+          symptoms: fullSymptoms,
+          preVisitSummary,
+          urgencyLevel: urgencyLevel as any,
+          suggestedQuestions: suggestedQuestions as any,
+          holdExpiresAt: null
+        }
+      });
+    } catch (updateError: any) {
+      console.error('Failed to update appointment to BOOKED:', updateError);
+      if (updateError.code === 'P2002') {
+        return NextResponse.json({ error: 'This time slot is already booked. Please choose another slot.' }, { status: 409 });
       }
-    });
+      return NextResponse.json({ error: 'Failed to confirm booking.' }, { status: 500 });
+    }
 
     try {
       const token = await getUserAccessToken(session.user.id);
-      if (token) {
-        const startISO = new Date(updated.date.toISOString().split('T')[0] + 'T' + updated.startTime + ':00').toISOString();
-        const endISO = new Date(updated.date.toISOString().split('T')[0] + 'T' + updated.endTime + ':00').toISOString();
+      if (token && updated) {
+        const appointmentDate = new Date(updated.date);
+        const dateStr = !isNaN(appointmentDate.getTime()) ? appointmentDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+        const startISO = new Date(`${dateStr}T${updated.startTime}:00`).toISOString();
+        const endISO = new Date(`${dateStr}T${updated.endTime}:00`).toISOString();
         
         const doctorUser = await prisma.user.findUnique({
           where: { id: updated.doctorId },
           select: { name: true }
         });
-        const doctorName = doctorUser?.name || updated.doctorId;
+        const doctorName = doctorUser?.name || 'Doctor';
 
         const eventId = await createCalendarEvent(token, {
           summary: `Appointment with Dr. ${doctorName}`,
@@ -76,7 +87,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
           await prisma.appointment.update({
             where: { id: updated.id },
             data: { calendarEventIdPatient: eventId }
-          });
+          }).catch(e => console.error('Failed to save calendar event id:', e));
         }
       }
     } catch (calendarError) {
