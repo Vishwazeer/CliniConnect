@@ -70,15 +70,7 @@ export async function POST(req: Request) {
     try {
       const token = await getUserAccessToken(session.user.id);
       if (token) {
-        let eventStart: Date;
-        if (nextReminderAt) {
-          eventStart = new Date(nextReminderAt);
-        } else {
-          eventStart = new Date(startDate);
-          if (isNaN(eventStart.getTime())) {
-            eventStart = new Date();
-          }
-        }
+        const eventStart: Date = parsedNext || parsedStart || new Date();
         const startDateTime = eventStart.toISOString();
         const endDateTime = new Date(eventStart.getTime() + 30 * 60 * 1000).toISOString();
 
@@ -95,6 +87,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ reminder });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Failed to create reminder:", error);
+    return NextResponse.json({ error: error.message || 'Failed to create reminder' }, { status: 500 });
   }
 }

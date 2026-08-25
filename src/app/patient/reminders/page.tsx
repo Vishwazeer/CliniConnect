@@ -55,13 +55,15 @@ export default function MedicationRemindersPage() {
           instructions: instructions || null,
           startDate,
           endDate: endDate || null,
-          nextReminderAt: startDate ? new Date(startDate).toISOString() : null
+          nextReminderAt: startDate || null
         })
       });
 
       if (res.ok) {
         const data = await res.json();
-        setReminders(prev => [data.reminder, ...prev]);
+        if (data.reminder) {
+          setReminders(prev => [data.reminder, ...prev]);
+        }
         
         // Reset form fields
         setMedicationName('');
@@ -70,8 +72,9 @@ export default function MedicationRemindersPage() {
         setInstructions('');
         setStartDate(new Date().toISOString().split('T')[0]);
         setEndDate('');
+        setError('');
       } else {
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         setError(data.error || 'Failed to create reminder');
       }
     } catch (err: any) {
