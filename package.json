@@ -41,5 +41,10 @@
     "tailwindcss": "^4",
     "tsx": "^4.0.0",
     "typescript": "^5"
+  },
+  "overrides": {
+    "next-auth": {
+      "next": "$next"
+    }
   }
 }
