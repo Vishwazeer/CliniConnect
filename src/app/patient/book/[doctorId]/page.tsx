@@ -39,17 +39,25 @@ export default function BookAppointmentPage({ params }: { params: Promise<{ doct
   }, [date, doctorId]);
 
   const handleSlotClick = async (startTime: string) => {
-    const res = await fetch('/api/patient/appointments', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ doctorId, date, startTime })
-    });
-    
-    if (res.ok) {
-      const data = await res.json();
-      router.push(`/patient/book/${doctorId}/symptoms?appointmentId=${data.appointmentId}`);
-    } else {
-      alert('Slot already taken or error occurred.');
+    try {
+      setLoading(true);
+      const res = await fetch('/api/patient/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ doctorId, date, startTime })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        router.push(`/patient/book/${doctorId}/symptoms?appointmentId=${data.appointmentId}`);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || 'Slot already taken or error occurred.');
+      }
+    } catch (e) {
+      alert('Network error — check your connection and try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
