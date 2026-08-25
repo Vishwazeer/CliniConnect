@@ -35,7 +35,7 @@ export default function AppointmentDetailPage({ params }: { params: Promise<{ id
       <div className="bg-white p-6 rounded-lg shadow">
         <div className="flex justify-between items-start mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Appointment with Dr. {apt.doctor?.user?.name}</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Appointment with Dr. {apt.doctor?.name || 'Doctor'}</h1>
             <p className="text-gray-500 mt-1">
               {new Date(apt.date).toLocaleDateString()} • {apt.startTime} - {apt.endTime}
             </p>

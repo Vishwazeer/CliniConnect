@@ -68,7 +68,7 @@ export default function PatientDashboard() {
             appointments.map(apt => (
               <div key={apt.id} className="p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
                 <div>
-                  <div className="font-medium text-gray-900">Dr. {apt.doctor?.user?.name || 'Unknown'}</div>
+                  <div className="font-medium text-gray-900">Dr. {apt.doctor?.name || 'Doctor'}</div>
                   <div className="text-sm text-gray-500 flex items-center gap-1 mt-1">
                     <CalendarDays size={14} />
                     {new Date(apt.date).toLocaleDateString()} at {apt.startTime}

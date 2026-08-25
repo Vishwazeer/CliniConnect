@@ -8,7 +8,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 
   const { id } = await params;
   const appointment = await prisma.appointment.findUnique({
-    where: { id, patientId: session.user.id },
+    where: { id },
     include: {
       doctor: {
         select: { name: true, email: true, doctorProfile: true }
@@ -16,7 +16,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     }
   });
 
-  if (!appointment) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  if (!appointment || appointment.patientId !== session.user.id) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json({ appointment });
 }
 
@@ -28,8 +28,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   const body = await req.json();
 
   if (body.status === 'CANCELLED') {
+    const apt = await prisma.appointment.findUnique({ where: { id } });
+    if (!apt || apt.patientId !== session.user.id) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+
     const updated = await prisma.appointment.update({
-      where: { id, patientId: session.user.id },
+      where: { id },
       data: { status: 'CANCELLED', cancellationReason: body.reason || 'Cancelled by patient' }
     });
     // Todo: enqueue cancellation emails

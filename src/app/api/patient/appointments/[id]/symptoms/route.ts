@@ -12,8 +12,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const { id } = await params;
     const { symptoms, duration, severity, currentMeds } = await req.json();
 
-    const apt = await prisma.appointment.findUnique({ where: { id, patientId: session.user.id } });
-    if (!apt) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    const apt = await prisma.appointment.findUnique({ where: { id } });
+    if (!apt || apt.patientId !== session.user.id) return NextResponse.json({ error: 'Not found' }, { status: 404 });
     if (apt.status !== 'HELD') return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
     
     if (apt.holdExpiresAt && apt.holdExpiresAt < new Date()) {
