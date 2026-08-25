@@ -14,6 +14,7 @@ interface CalendarEventData {
   description: string;
   startDateTime: string; // ISO 8601
   endDateTime: string; // ISO 8601
+  recurrence?: string[]; // e.g. ['RRULE:FREQ=DAILY;UNTIL=20260901T235959Z']
   attendeeEmail?: string;
 }
 
@@ -73,27 +74,33 @@ export async function createCalendarEventForUser(
     const calendar = await getAuthenticatedCalendarClient(userId);
     if (!calendar) return null;
 
+    const requestBody: any = {
+      summary: data.summary,
+      description: data.description,
+      start: {
+        dateTime: data.startDateTime,
+        timeZone: "Asia/Kolkata",
+      },
+      end: {
+        dateTime: data.endDateTime,
+        timeZone: "Asia/Kolkata",
+      },
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: "popup", minutes: 10 },
+          { method: "email", minutes: 60 },
+        ],
+      },
+    };
+
+    if (data.recurrence && data.recurrence.length > 0) {
+      requestBody.recurrence = data.recurrence;
+    }
+
     const event = await calendar.events.insert({
       calendarId: "primary",
-      requestBody: {
-        summary: data.summary,
-        description: data.description,
-        start: {
-          dateTime: data.startDateTime,
-          timeZone: "Asia/Kolkata",
-        },
-        end: {
-          dateTime: data.endDateTime,
-          timeZone: "Asia/Kolkata",
-        },
-        reminders: {
-          useDefault: false,
-          overrides: [
-            { method: "popup", minutes: 60 },
-            { method: "email", minutes: 1440 },
-          ],
-        },
-      },
+      requestBody,
     });
     return event.data.id || null;
   } catch (error) {

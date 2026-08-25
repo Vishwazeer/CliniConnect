@@ -47,11 +47,22 @@ export async function POST(req: Request) {
   if (!session || session.user?.role !== 'PATIENT') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { medicationName, dosage, frequency, instructions, startDate, endDate, nextReminderAt } = await req.json();
+    const { medicationName, dosage, frequency, instructions, startDate, endDate, reminderTimes, nextReminderAt } = await req.json();
 
     const parsedStart = parseDateSafely(startDate, new Date())!;
     const parsedEnd = parseDateSafely(endDate, null);
-    const parsedNext = parseDateSafely(nextReminderAt, parsedStart);
+
+    // Normalize reminder times
+    let timesList: string[] = [];
+    if (Array.isArray(reminderTimes) && reminderTimes.length > 0) {
+      timesList = reminderTimes.filter((t: any) => typeof t === 'string' && t.trim().length > 0);
+    }
+    if (timesList.length === 0) {
+      if (frequency === 'Twice a day') timesList = ['08:00', '20:00'];
+      else if (frequency === 'Three times a day') timesList = ['08:00', '14:00', '20:00'];
+      else if (frequency === 'Four times a day') timesList = ['08:00', '12:00', '16:00', '20:00'];
+      else timesList = ['08:00'];
+    }
 
     const reminder = await prisma.medicationReminder.create({
       data: {
@@ -62,24 +73,41 @@ export async function POST(req: Request) {
         instructions: instructions || null,
         startDate: parsedStart,
         endDate: parsedEnd,
-        nextReminderAt: parsedNext,
+        reminderTimes: timesList,
+        nextReminderAt: parseDateSafely(nextReminderAt, parsedStart),
         isActive: true
       }
     });
 
     try {
-      const eventStart: Date = parsedNext || parsedStart || new Date();
-      const startDateTime = eventStart.toISOString();
-      const endDateTime = new Date(eventStart.getTime() + 30 * 60 * 1000).toISOString();
+      // Build Google Calendar Recurrence Rule for all days between startDate and endDate
+      let recurrence: string[] = ['RRULE:FREQ=DAILY'];
+      if (parsedEnd) {
+        const endYear = parsedEnd.getFullYear();
+        const endMonth = String(parsedEnd.getMonth() + 1).padStart(2, '0');
+        const endDay = String(parsedEnd.getDate()).padStart(2, '0');
+        recurrence = [`RRULE:FREQ=DAILY;UNTIL=${endYear}${endMonth}${endDay}T235959Z`];
+      }
 
-      await createCalendarEventForUser(session.user.id, {
-        summary: `Take Medication: ${medicationName} (${dosage})`,
-        description: `Dosage: ${dosage}\nFrequency: ${frequency}\nInstructions: ${instructions || 'None'}`,
-        startDateTime,
-        endDateTime
-      });
+      const dateStr = parsedStart.toISOString().split('T')[0];
+
+      // Create a recurring daily event for each scheduled timing
+      for (const timeStr of timesList) {
+        const [hours, mins] = timeStr.split(':');
+        const eventStart = new Date(`${dateStr}T${(hours || '08').padStart(2, '0')}:${(mins || '00').padStart(2, '0')}:00`);
+        const startDateTime = !isNaN(eventStart.getTime()) ? eventStart.toISOString() : new Date().toISOString();
+        const endDateTime = new Date(new Date(startDateTime).getTime() + 15 * 60 * 1000).toISOString();
+
+        await createCalendarEventForUser(session.user.id, {
+          summary: `💊 Take ${medicationName} (${dosage})`,
+          description: `Dosage: ${dosage}\nFrequency: ${frequency}\nTime: ${timeStr}\nInstructions: ${instructions || 'None'}\nDuration: ${parsedStart.toLocaleDateString()} to ${parsedEnd ? parsedEnd.toLocaleDateString() : 'Ongoing'}`,
+          startDateTime,
+          endDateTime,
+          recurrence
+        });
+      }
     } catch (calendarError) {
-      console.error("Failed to sync reminder to Google Calendar:", calendarError);
+      console.error("Failed to sync recurring reminders to Google Calendar:", calendarError);
     }
 
     return NextResponse.json({ reminder });

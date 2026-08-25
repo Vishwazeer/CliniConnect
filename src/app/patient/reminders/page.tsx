@@ -14,11 +14,38 @@ export default function MedicationRemindersPage() {
   const [instructions, setInstructions] = useState('');
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState('');
+  const [times, setTimes] = useState<string[]>(['08:00']);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     fetchReminders();
   }, []);
+
+  const handleFrequencyChange = (freq: string) => {
+    setFrequency(freq);
+    if (freq === 'Daily') setTimes(['08:00']);
+    else if (freq === 'Twice a day') setTimes(['08:00', '20:00']);
+    else if (freq === 'Three times a day') setTimes(['08:00', '14:00', '20:00']);
+    else if (freq === 'Four times a day') setTimes(['08:00', '12:00', '16:00', '20:00']);
+    else if (freq === 'Weekly') setTimes(['09:00']);
+  };
+
+  const handleAddTime = () => {
+    setTimes(prev => [...prev, '12:00']);
+  };
+
+  const handleRemoveTime = (index: number) => {
+    if (times.length <= 1) return;
+    setTimes(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleTimeChange = (index: number, val: string) => {
+    setTimes(prev => {
+      const next = [...prev];
+      next[index] = val;
+      return next;
+    });
+  };
 
   const fetchReminders = () => {
     fetch('/api/patient/reminders')
@@ -55,6 +82,7 @@ export default function MedicationRemindersPage() {
           instructions: instructions || null,
           startDate,
           endDate: endDate || null,
+          reminderTimes: times,
           nextReminderAt: startDate || null
         })
       });
@@ -72,6 +100,7 @@ export default function MedicationRemindersPage() {
         setInstructions('');
         setStartDate(new Date().toISOString().split('T')[0]);
         setEndDate('');
+        setTimes(['08:00']);
         setError('');
       } else {
         const data = await res.json().catch(() => ({}));
@@ -110,7 +139,7 @@ export default function MedicationRemindersPage() {
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
         <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Medication Reminders</h1>
-        <p className="text-gray-500 mt-1">Add and manage your medications and scheduling notifications.</p>
+        <p className="text-gray-500 mt-1">Add and manage your medications and scheduling notifications across all days.</p>
       </div>
 
       {error && (
@@ -164,13 +193,13 @@ export default function MedicationRemindersPage() {
             </label>
             <select
               value={frequency}
-              onChange={e => setFrequency(e.target.value)}
+              onChange={e => handleFrequencyChange(e.target.value)}
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-gray-900 bg-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-sm"
             >
-              <option value="Daily">Daily</option>
-              <option value="Twice a day">Twice a day</option>
-              <option value="Three times a day">Three times a day</option>
-              <option value="Four times a day">Four times a day</option>
+              <option value="Daily">Daily (1 time a day)</option>
+              <option value="Twice a day">Twice a day (2 times)</option>
+              <option value="Three times a day">Three times a day (3 times)</option>
+              <option value="Four times a day">Four times a day (4 times)</option>
               <option value="Weekly">Weekly</option>
               <option value="As needed">As needed (PRN)</option>
             </select>
@@ -212,6 +241,48 @@ export default function MedicationRemindersPage() {
               onChange={e => setEndDate(e.target.value)}
               className="w-full px-3 py-2 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-sm"
             />
+          </div>
+
+          {/* Dynamic Reminder Timings Section */}
+          <div className="md:col-span-2 border-t border-gray-100 pt-4 mt-2">
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                Reminder Timings (Daily Schedule)
+              </label>
+              <button
+                type="button"
+                onClick={handleAddTime}
+                className="text-xs font-semibold text-cyan-600 hover:text-cyan-700 flex items-center gap-1"
+              >
+                <Plus size={14} /> Add Another Time
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {times.map((t, idx) => (
+                <div key={idx} className="flex items-center gap-1.5 bg-cyan-50/60 p-2 rounded-lg border border-cyan-100">
+                  <Clock size={16} className="text-cyan-600 shrink-0" />
+                  <input
+                    type="time"
+                    value={t}
+                    onChange={e => handleTimeChange(idx, e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded px-2 py-1 text-sm text-gray-900 focus:outline-none focus:border-cyan-500"
+                    required
+                  />
+                  {times.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveTime(idx)}
+                      className="text-gray-400 hover:text-red-500 p-1"
+                      title="Remove time"
+                    >
+                      &times;
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            <p className="text-[11px] text-gray-400 mt-1.5">Google Calendar events and reminders will automatically repeat every day for all the times above.</p>
           </div>
 
           <div className="md:col-span-2 flex justify-end pt-2">
@@ -265,10 +336,21 @@ export default function MedicationRemindersPage() {
                     )}
                   </div>
 
+                  {/* Scheduled Times badges */}
+                  {Array.isArray(r.reminderTimes) && r.reminderTimes.length > 0 && (
+                    <div className="flex items-center flex-wrap gap-1.5 pt-1">
+                      <span className="text-xs text-gray-400 font-medium">Daily times:</span>
+                      {r.reminderTimes.map((tm: string, i: number) => (
+                        <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 bg-cyan-50 text-cyan-700 border border-cyan-100 text-xs font-semibold rounded-md">
+                          <Clock size={10} /> {tm}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400 pt-1">
                     <span className="flex items-center gap-1"><Calendar size={12} /> Start: {new Date(r.startDate).toLocaleDateString()}</span>
                     {r.endDate && <span className="flex items-center gap-1"><Calendar size={12} /> End: {new Date(r.endDate).toLocaleDateString()}</span>}
-                    {r.nextReminderAt && <span className="flex items-center gap-1 text-cyan-600"><Clock size={12} /> Next: {new Date(r.nextReminderAt).toLocaleString()}</span>}
                   </div>
                 </div>
 

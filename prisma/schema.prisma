@@ -157,6 +157,7 @@ model MedicationReminder {
   instructions    String?
   startDate       DateTime  @db.Date
   endDate         DateTime? @db.Date
+  reminderTimes   Json?     // Array of time strings, e.g. ["08:00", "14:00", "20:00"]
   nextReminderAt  DateTime?
   isActive        Boolean   @default(true)
   createdAt       DateTime  @default(now())
