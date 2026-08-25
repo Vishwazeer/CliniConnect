@@ -96,10 +96,10 @@ export default function LoginPage() {
         <div className="flex-grow border-t border-slate-200"></div>
       </div>
 
-      {/* Staff Quick Fill Dropdown */}
+      {/* Quick Demo Selector for Judges & Staff */}
       <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
         <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
-          Quick Demo Staff Selector:
+          Demo 1-Click Role Selector (For Judges / Staff):
         </label>
         <select
           onChange={(e) => {
@@ -112,6 +112,7 @@ export default function LoginPage() {
           defaultValue="sarah.patel@healthcare.com"
           className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500 cursor-pointer shadow-2xs"
         >
+          <option value="john.doe@example.com">👤 Demo Patient (John Doe)</option>
           <option value="sarah.patel@healthcare.com">👩‍⚕️ Dr. Sarah Patel (General Medicine)</option>
           <option value="rajesh.kumar@healthcare.com">👨‍⚕️ Dr. Rajesh Kumar (Cardiology)</option>
           <option value="priya.sharma@healthcare.com">👩‍⚕️ Dr. Priya Sharma (Dermatology)</option>
@@ -119,12 +120,12 @@ export default function LoginPage() {
           <option value="meera.nair@healthcare.com">👩‍⚕️ Dr. Meera Nair (Pediatrics)</option>
           <option value="admin@healthcare.com">🛡️ Admin User (Hospital Admin)</option>
         </select>
-        <p className="text-[10px] text-slate-400">Selecting a doctor automatically fills their credentials below.</p>
+        <p className="text-[10px] text-slate-400">Selecting any role autofills credentials below for instant evaluation.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3.5">
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Doctor / Staff Email</label>
+          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">Email Address</label>
           <input
             type="email"
             value={email}
