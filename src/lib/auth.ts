@@ -47,6 +47,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!isValid) return null;
 
+        // Enforce Google Sign-In for Patients to ensure Google Calendar tokens are active
+        if (user.role === 'PATIENT') {
+          throw new Error('Patients must sign in using Google to enable Calendar reminders.');
+        }
+
         return {
           id: user.id,
           email: user.email,
